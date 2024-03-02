@@ -1,0 +1,4 @@
+*.bin
+!payload.bin
+.venv/
+__pycache__/
