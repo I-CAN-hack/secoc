@@ -160,6 +160,9 @@ if __name__ == "__main__":
         with tqdm(total=end-start) as pbar:
             while start < end:
                 for addr, _, data, bus in panda.can_recv():
+                    if bus != BUS:
+                        continue
+
                     if data == b"\x03\x7f\x31\x78\x00\x00\x00\x00": # Skip response pending
                         continue
 
