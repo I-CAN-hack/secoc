@@ -166,8 +166,6 @@ if __name__ == "__main__":
                     if addr != ADDR + 8:
                         continue
 
-                    print(data.hex())
-
                     ptr = struct.unpack("<I", data[:4])[0]
                     assert (ptr >> 8) == start & 0xffffff # Check lower 24 bits of address
 
