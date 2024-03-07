@@ -10,7 +10,7 @@ This repository contains scripts to extract the SecOC keys for the following veh
  - A comma.ai panda is needed to communicate over CAN, and the latest panda python library needs to be installed (pip install -r requirements.txt).
 
 ## Extracting Keys
-Ensure the car is accessory mode, then run the script. Example:
+Ensure the car has ignition on, then run the script. Example:
 
 ```bash
 $ ./extract_keys.py
