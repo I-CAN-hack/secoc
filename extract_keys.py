@@ -28,7 +28,7 @@ DID_202_IV = b'\x00' * 16
 
 if __name__ == "__main__":
     panda = Panda()
-    panda.set_safety_mode(Panda.SAFETY_ALLOUTPUT)
+    panda.set_safety_mode(Panda.SAFETY_ELM327)
 
     uds_client = UdsClient(panda, ADDR, ADDR + 8, BUS, timeout=0.1, response_pending_timeout=0.1, debug=DEBUG)
 
