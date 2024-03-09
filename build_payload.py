@@ -23,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument('shellcode', help='Path to shellcode')
     parser.add_argument('-s', '--secret', help='Secret to derive encryption key')
     parser.add_argument('-k', '--key', help='Encryption key (DID 0x201)', default="00" * 16)
-    parser.add_argument('-i', '--iv', help='Encryption key (DID 0x201)', default="00" * 16)
+    parser.add_argument('-i', '--iv', help='Encryption IV (DID 0x202)', default="00" * 16)
 
     args = parser.parse_args()
 
