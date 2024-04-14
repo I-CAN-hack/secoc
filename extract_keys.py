@@ -190,3 +190,11 @@ if __name__ == "__main__":
 
     print("\nECU_MASTER_KEY   ", extracted[0x2c:0x3c].hex())
     print("SecOC Key (KEY_4)", extracted[0x8c:0x9c].hex())
+
+    try:
+        from openpilot.common.params import Params
+        params = Params()
+        params.put("SecOCKey", extracted[0x8c:0x9c].hex())
+        print("\nSecOC key written to param successfully!")
+    except Exception:
+        print("\nFailed to write SecOCKey param")
