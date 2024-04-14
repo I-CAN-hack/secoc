@@ -25,6 +25,12 @@ SEED_KEY_SECRET = b'\xf0\x5f\x36\xb7\xd7\x8c\x03\xe2\x4a\xb4\xfa\xef\x2a\x57\xd0
 DID_201_KEY = b'\x00' * 16
 DID_202_IV = b'\x00' * 16
 
+# Confirmed working on the following versions
+APPLICATION_VERSIONS = {
+    b'\x018965B4209000\x00\x00\x00\x00': b'\x01!!!!!!!!!!!!!!!!', # Rav4 Prime
+    b'\x018965B4509100\x00\x00\x00\x00': b'\x01!!!!!!!!!!!!!!!!', # Sienna
+}
+
 
 if __name__ == "__main__":
     panda = Panda()
@@ -35,14 +41,14 @@ if __name__ == "__main__":
     print("Getting application versions...")
 
     try:
-        data = uds_client.read_data_by_identifier(DATA_IDENTIFIER_TYPE.APPLICATION_SOFTWARE_IDENTIFICATION)
-        print(" - APPLICATION_SOFTWARE_IDENTIFICATION (application)", data)
+        app_version = uds_client.read_data_by_identifier(DATA_IDENTIFIER_TYPE.APPLICATION_SOFTWARE_IDENTIFICATION)
+        print(" - APPLICATION_SOFTWARE_IDENTIFICATION (application)", app_version)
     except NegativeResponseError:
         print("Can't read application software identification. Please cycle ignition.")
         exit(1)
 
-    if data != b'\x018965B4209000\x00\x00\x00\x00':
-        print("Unexpected application version!", data)
+    if app_version not in APPLICATION_VERSIONS:
+        print("Unexpected application version!", app_version)
         exit(1)
 
     # Mandatory flow of diagnostic sessions
@@ -53,11 +59,11 @@ if __name__ == "__main__":
     # Get bootloader version
     uds_client.diagnostic_session_control(SESSION_TYPE.DEFAULT)
     uds_client.diagnostic_session_control(SESSION_TYPE.EXTENDED_DIAGNOSTIC)
-    data = uds_client.read_data_by_identifier(DATA_IDENTIFIER_TYPE.APPLICATION_SOFTWARE_IDENTIFICATION)
-    print(" - APPLICATION_SOFTWARE_IDENTIFICATION (bootloader) ", data)
+    bl_version = uds_client.read_data_by_identifier(DATA_IDENTIFIER_TYPE.APPLICATION_SOFTWARE_IDENTIFICATION)
+    print(" - APPLICATION_SOFTWARE_IDENTIFICATION (bootloader) ", bl_version)
 
-    if data != b'\x01!!!!!!!!!!!!!!!!':
-        print("Unexpected bootloader version!", data)
+    if bl_version != APPLICATION_VERSIONS[app_version]:
+        print("Unexpected bootloader version!", bl_version)
         exit(1)
 
     # Go back to programming session
