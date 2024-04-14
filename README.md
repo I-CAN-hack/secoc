@@ -1,7 +1,8 @@
 ## SecOC Key Extractor
 
-This repository contains scripts to extract the SecOC keys for the following vehicles:
- - 2021+ Rav4 Prime. See the related [blog post](https://icanhack.nl/blog/secoc-key-extraction/) for more details.
+This repository contains scripts to extract SecOC keys. See the related [blog post](https://icanhack.nl/blog/secoc-key-extraction/) for more details. Confirmed working by users on the following vehicles:
+ - 2021 Rav4 Prime
+ - 2021 Sienna LE
 
 
 ## Read this first
