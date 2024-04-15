@@ -32,6 +32,22 @@ APPLICATION_VERSIONS = {
     b'\x018965B4509100\x00\x00\x00\x00': b'\x01!!!!!!!!!!!!!!!!', # Sienna
 }
 
+KEY_STRUCT_SIZE = 0x20
+CHECKSUM_OFFSET = 0x1d
+SECOC_KEY_SIZE = 0x10
+SECOC_KEY_OFFSET = 0x0c
+
+def get_key_struct(data, key_no):
+    return data[key_no * KEY_STRUCT_SIZE: (key_no + 1) * KEY_STRUCT_SIZE]
+
+def verify_checksum(key_struct):
+    checksum = sum(key_struct[:CHECKSUM_OFFSET])
+    checksum = ~checksum & 0xff
+    return checksum == key_struct[CHECKSUM_OFFSET]
+
+def get_secoc_key(key_struct):
+    return key_struct[SECOC_KEY_OFFSET:SECOC_KEY_OFFSET + SECOC_KEY_SIZE]
+
 
 if __name__ == "__main__":
     try:
@@ -197,13 +213,23 @@ if __name__ == "__main__":
                     start += 4
                     pbar.update(4)
 
-    print("\nECU_MASTER_KEY   ", extracted[0x2c:0x3c].hex())
-    print("SecOC Key (KEY_4)", extracted[0x8c:0x9c].hex())
+    key_1_ok = verify_checksum(get_key_struct(extracted, 1))
+    key_4_ok = verify_checksum(get_key_struct(extracted, 4))
+
+    if not key_1_ok or not key_4_ok:
+        print("SecOC key checksum verification failed!")
+        exit(1)
+
+    key_1 = get_secoc_key(get_key_struct(extracted, 1))
+    key_4 = get_secoc_key(get_key_struct(extracted, 4))
+
+    print("\nECU_MASTER_KEY   ", key_1.hex())
+    print("SecOC Key (KEY_4)", key_4.hex())
 
     try:
         from openpilot.common.params import Params
         params = Params()
-        params.put("SecOCKey", extracted[0x8c:0x9c].hex())
+        params.put("SecOCKey", key_4.hex())
         print("\nSecOC key written to param successfully!")
     except Exception:
         print("\nFailed to write SecOCKey param")
