@@ -3,6 +3,7 @@
 import struct
 import time
 import binascii
+from subprocess import check_output, CalledProcessError
 
 from Crypto.Cipher import AES
 from tqdm import tqdm
@@ -33,6 +34,14 @@ APPLICATION_VERSIONS = {
 
 
 if __name__ == "__main__":
+    try:
+        check_output(["pidof", "boardd"])
+        print("boardd is running, please kill openpilot before running this script! (aborted)")
+        exit(1)
+    except CalledProcessError as e:
+        if e.returncode != 1: # 1 == no process found (boardd not running)
+            raise e
+
     panda = Panda()
     panda.set_safety_mode(Panda.SAFETY_ELM327)
 
