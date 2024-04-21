@@ -45,6 +45,10 @@ void exploit() {
         addr++;
     }
 
-    void (*bl_reset)(void) = (void (*)(void))0x0000157e;
-    bl_reset();
+    while (1) {
+        ;
+    }
+
+    // void (*bl_reset)(void) = (void (*)(void))0x0000157e;
+    // bl_reset();
 }
