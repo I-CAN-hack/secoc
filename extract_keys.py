@@ -182,9 +182,9 @@ if __name__ == "__main__":
     erase = b"\x31\x01\xff\x00" + data
     panda.isotp_send(ADDR, erase, bus=BUS)
 
-    print("\nDumping keys...")
-    start = 0xfebe6e34
-    end = 0xfebe6ff4
+    print("\nDumping dataflash...")
+    start = 0xff200000
+    end = 0xff208000
 
     extracted = b""
 
@@ -213,24 +213,3 @@ if __name__ == "__main__":
 
                     start += 4
                     pbar.update(4)
-
-    key_1_ok = verify_checksum(get_key_struct(extracted, 1))
-    key_4_ok = verify_checksum(get_key_struct(extracted, 4))
-
-    if not key_1_ok or not key_4_ok:
-        print("SecOC key checksum verification failed!")
-        exit(1)
-
-    key_1 = get_secoc_key(get_key_struct(extracted, 1))
-    key_4 = get_secoc_key(get_key_struct(extracted, 4))
-
-    print("\nECU_MASTER_KEY   ", key_1.hex())
-    print("SecOC Key (KEY_4)", key_4.hex())
-
-    try:
-        from openpilot.common.params import Params
-        params = Params()
-        params.put("SecOCKey", key_4.hex())
-        print("\nSecOC key written to param successfully!")
-    except Exception:
-        print("\nFailed to write SecOCKey param")
