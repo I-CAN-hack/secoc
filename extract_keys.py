@@ -191,7 +191,7 @@ if __name__ == "__main__":
     with open(f'data_{start:08x}_{end:08x}.bin', 'wb') as f:
         with tqdm(total=end-start) as pbar:
             while start < end:
-                for addr, *_, data, bus in panda.can_recv()
+                for addr, *_, data, bus in panda.can_recv():
                     if bus != BUS:
                         continue
 
