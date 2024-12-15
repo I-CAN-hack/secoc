@@ -191,21 +191,7 @@ if __name__ == "__main__":
     with open(f'data_{start:08x}_{end:08x}.bin', 'wb') as f:
         with tqdm(total=end-start) as pbar:
             while start < end:
-                for ret_vals in panda.can_recv():
-                    if not isinstance(ret_vals, tuple):
-                        # len() on a non-iterable type will throw TypeError(object of type '<type>' has no len())
-                        # so catch it before calling len() on the next elif.
-                        raise ValueError(f"Unexpected non-tuple return value from panda.can_recv(): {ret_vals}")
-                    elif len(ret_vals) == 4:
-                        # Pre signature change
-                        addr, _, data, bus = ret_vals
-                    elif len(ret_vals) == 3:
-                        # Post signature change
-                        # https://github.com/commaai/panda/commit/8c3bb0151e8907ade344ccb293d58cd543e28baa
-                        addr, data, bus = ret_vals
-                    else:
-                        raise ValueError(f"Unexpected number of items in the tuple returned from panda.can_recv(): {ret_vals}")
-
+                for addr, *_, data, bus in panda.can_recv()
                     if bus != BUS:
                         continue
 
