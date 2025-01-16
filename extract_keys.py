@@ -9,12 +9,7 @@ from Crypto.Cipher import AES
 from tqdm import tqdm
 
 from panda import Panda
-try:
-    # If openpilot is installed
-    from opendbc.car.uds import UdsClient, ACCESS_TYPE, SESSION_TYPE, DATA_IDENTIFIER_TYPE, SERVICE_TYPE, ROUTINE_CONTROL_TYPE, NegativeResponseError
-except ImportError:
-    # If installed from pip
-    from panda.uds import UdsClient, ACCESS_TYPE, SESSION_TYPE, DATA_IDENTIFIER_TYPE, SERVICE_TYPE, ROUTINE_CONTROL_TYPE, NegativeResponseError
+from opendbc.car.uds import UdsClient, ACCESS_TYPE, SESSION_TYPE, DATA_IDENTIFIER_TYPE, SERVICE_TYPE, ROUTINE_CONTROL_TYPE, NegativeResponseError
 
 ADDR = 0x7a1
 DEBUG = False
