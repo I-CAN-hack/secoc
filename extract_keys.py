@@ -9,12 +9,9 @@ from Crypto.Cipher import AES
 from tqdm import tqdm
 
 from panda import Panda
-try:
-    # If openpilot is installed
-    from panda.python.uds import UdsClient, ACCESS_TYPE, SESSION_TYPE, DATA_IDENTIFIER_TYPE, SERVICE_TYPE, ROUTINE_CONTROL_TYPE, NegativeResponseError
-except ImportError:
-    # If installed from pip
-    from panda.uds import UdsClient, ACCESS_TYPE, SESSION_TYPE, DATA_IDENTIFIER_TYPE, SERVICE_TYPE, ROUTINE_CONTROL_TYPE, NegativeResponseError
+from opendbc.car.uds import UdsClient, ACCESS_TYPE, SESSION_TYPE, DATA_IDENTIFIER_TYPE, SERVICE_TYPE, ROUTINE_CONTROL_TYPE, NegativeResponseError
+from opendbc.car.structs import CarParams
+from opendbc.car.isotp import isotp_send
 
 ADDR = 0x7a1
 DEBUG = False
@@ -58,11 +55,13 @@ if __name__ == "__main__":
     except CalledProcessError as e:
         if e.returncode != 1: # 1 == no process found (boardd not running)
             raise e
+    except FileNotFoundError:
+        pass
 
     panda = Panda()
-    panda.set_safety_mode(Panda.SAFETY_ELM327)
+    panda.set_safety_mode(CarParams.SafetyModel.elm327)
 
-    uds_client = UdsClient(panda, ADDR, ADDR + 8, BUS, timeout=0.1, response_pending_timeout=0.1, debug=DEBUG)
+    uds_client = UdsClient(panda, ADDR, ADDR + 8, BUS, timeout=0.1, response_pending_timeout=0.1)
 
     print("Getting application versions...")
 
@@ -180,7 +179,7 @@ if __name__ == "__main__":
     # Manually send so we don't get stuck waiting for the response
     # uds_client.routine_control(ROUTINE_CONTROL_TYPE.START, 0xff00, data)
     erase = b"\x31\x01\xff\x00" + data
-    panda.isotp_send(ADDR, erase, bus=BUS)
+    isotp_send(panda, erase, ADDR, bus=BUS)
 
     print("\nDumping keys...")
     start = 0xfebe6e34
