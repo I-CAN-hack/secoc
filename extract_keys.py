@@ -28,6 +28,7 @@ APPLICATION_VERSIONS = {
     b'\x018965B4209000\x00\x00\x00\x00': b'\x01!!!!!!!!!!!!!!!!', # 2021 RAV4 Prime
     b'\x018965B4233100\x00\x00\x00\x00': b'\x01!!!!!!!!!!!!!!!!', # 2023 RAV4 Prime
     b'\x018965B4509100\x00\x00\x00\x00': b'\x01!!!!!!!!!!!!!!!!', # 2021 Sienna
+    b'\x048965F3401200\x00\x00\x00\x008A3113402000\x00\x00\x00\x008965F3402200\x00\x00\x00\x008A3213402000\x00\x00\x00\x00': b'\x04!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
 }
 
 KEY_STRUCT_SIZE = 0x20
@@ -61,7 +62,7 @@ if __name__ == "__main__":
     panda = Panda()
     panda.set_safety_mode(CarParams.SafetyModel.elm327)
 
-    uds_client = UdsClient(panda, ADDR, ADDR + 8, BUS, timeout=0.1, response_pending_timeout=0.1)
+    uds_client = UdsClient(panda, ADDR, ADDR + 8, BUS, timeout=0.1, response_pending_timeout=1.0)
 
     print("Getting application versions...")
 
@@ -82,8 +83,6 @@ if __name__ == "__main__":
     uds_client.diagnostic_session_control(SESSION_TYPE.PROGRAMMING)
 
     # Get bootloader version
-    uds_client.diagnostic_session_control(SESSION_TYPE.DEFAULT)
-    uds_client.diagnostic_session_control(SESSION_TYPE.EXTENDED_DIAGNOSTIC)
     bl_version = uds_client.read_data_by_identifier(DATA_IDENTIFIER_TYPE.APPLICATION_SOFTWARE_IDENTIFICATION)
     print(" - APPLICATION_SOFTWARE_IDENTIFICATION (bootloader) ", bl_version)
 
@@ -113,7 +112,7 @@ if __name__ == "__main__":
     print("\nPreparing to upload payload...")
 
     # Write something to DID 203, not sure why but needed for state machine
-    uds_client.write_data_by_identifier(0x203, b"\x00" * 5)
+    uds_client.write_data_by_identifier(0x203, b"\x01\x00\x00\x00\x00")
 
     # Write KEY and IV to DID 201/202, prerequisite for request download
     print(" - Write data by identifier 0x201", DID_201_KEY.hex())
@@ -126,7 +125,7 @@ if __name__ == "__main__":
     data = b"\x01" # [1] Format
     data += b"\x46" # [2] 4 size bytes, 6 address bytes
     data += b"\x01" # [3] memoryIdentifier
-    data += b"\x00" # [4]
+    data += b"\x01" # [4]
     data += struct.pack('!I', 0xfebf0000) # [5] Address
     data += struct.pack('!I', 0x1000) # [9] Size
 
@@ -155,7 +154,7 @@ if __name__ == "__main__":
     # [5] 0x0
     # [6] mem addr
     # [10] mem addr
-    data = b"\x45\x00"
+    data = b"\x45\x01"
     data += struct.pack('!I', 0xfebf0000)
     data += struct.pack('!I', 0x1000)
 
@@ -172,7 +171,7 @@ if __name__ == "__main__":
     # [5] 0x0
     # [6] mem addr
     # [10] mem addr
-    data = b"\x45\x00"
+    data = b"\x45\x01"
     data += struct.pack('!I', 0xe0000)
     data += struct.pack('!I', 0x8000)
 

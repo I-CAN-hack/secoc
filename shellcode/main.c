@@ -12,7 +12,7 @@ void exploit() {
 
     int *addr = 0xff200000;
     while (addr < 0xff208000) {
-        int i = 0x10;
+        int i = 0x0A;
 
         if ((*(RSCFDnCFDTMSTSp + i) & 0b110) != 0) {
             continue;
